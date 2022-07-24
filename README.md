@@ -12,6 +12,7 @@ Make sure you have the following on your machine:
 
 We recommend being familiar with these:
 - TypeScript - [Documentation](https://www.typescriptlang.org/docs/)
+- discord.js - [Documentation](https://discord.js.org/#/docs/discord.js/main/general/welcome)
 
 ### Installation
 Clone the repository onto your machine
