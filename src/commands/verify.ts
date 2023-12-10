@@ -4,9 +4,9 @@ import {
     SlashCommandStringOption,
     GuildMemberRoleManager
 } from "discord.js";
+const dotenv = require('dotenv');
 
 import { CoCommand } from "../structures";
-import axios from "axios";
 
 const Verify = new CoCommand({
     data: new SlashCommandBuilder()
@@ -23,26 +23,46 @@ const Verify = new CoCommand({
             await interaction.deferReply({ ephemeral: true });
 
             const userEmail = interaction.options.get("email")?.value;
-            const discordId = interaction.user.id
-            const verifyUser = await axios.patch(`http://localhost:3000/v1/users/discord/verify?email=${userEmail}&discordId=${discordId}`)
-
-            if (verifyUser.data?.success) {
-                const roleName = "member"
-                const memberRole = interaction.guild?.roles.cache.find(role => role.name === roleName);
-                if (!memberRole) {
-                    await interaction.editReply("Role name '" + roleName + "' does not exist.");
-                    return
-                }
-                (interaction.member?.roles as GuildMemberRoleManager).add(memberRole);
-
-                await interaction.editReply("Successfully verified user!");
-            }
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                await interaction.editReply(error.response?.data.error.message);
+            const userDiscordId = interaction.user.id
+        
+            if (process.env.NODE_ENV === 'production') {
+                dotenv.config({ path: '.env.production' });
             } else {
-                await interaction.editReply('An unknown error occurred: ' + error);
+                dotenv.config({ path: '.env.development' });
             }
+            
+            const url = process.env.VERIFY_DISCORD_API_ENDPOINT + `?email=${userEmail}&discordId=${userDiscordId}`
+            const options = {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+            fetch(url, options)
+                .then(res => {
+                    return res.json()
+                })
+                .then(data => {
+                    if (data.success) {
+                        const roleName = "member"
+                        const memberRole = interaction.guild?.roles.cache.find(role => role.name === roleName);
+                        if (!memberRole) {
+                            interaction.editReply("Role name '" + roleName + "' does not exist.");
+                            return
+                        }
+                        (interaction.member?.roles as GuildMemberRoleManager).add(memberRole);
+
+                        interaction.editReply("Successfully verified user!");
+                    }
+                    else {
+                        interaction.editReply("Error: " + data.error.message);
+                    }
+                })
+                .catch(error => {
+                    interaction.editReply("Error: " + error);
+                })
+        } catch (error) {
+            await interaction.editReply('Error: ' + error);
         }
     }
 });
