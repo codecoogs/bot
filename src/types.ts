@@ -13,7 +13,7 @@ interface CommandExecuteOptions {
 type CommandExecute = (options: CommandExecuteOptions) => Promise<any> | any;
 
 export type CoCommandOptions = {
-    data: SlashCommandBuilder;
+    data: Partial<SlashCommandBuilder>;
     execute: CommandExecute;
 };
 
