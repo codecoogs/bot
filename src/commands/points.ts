@@ -66,7 +66,7 @@ const Points = new CoCommand({
                 })
                 .then(data => {
                     if (data.success) {
-                        interaction.editReply(`${data.data.first_name} ${data.data.last_name}, you have ${data.data.points} points"`);
+                        interaction.editReply(`${data.data.first_name} ${data.data.last_name}, you have ${data.data.points} points`);
                         return
                     }
                     interaction.editReply("Error: " + data.error.message);
