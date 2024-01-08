@@ -1,12 +1,18 @@
-
 import { 
     SlashCommandBuilder,
     SlashCommandStringOption,
-    GuildMemberRoleManager
+    GuildMemberRoleManager,
+    EmbedBuilder
 } from "discord.js";
 const dotenv = require('dotenv');
 
 import { CoCommand } from "../structures";
+
+if (process.env.NODE_ENV === 'production') {
+    dotenv.config({ path: '.env.production' });
+} else {
+    dotenv.config({ path: '.env.development' });
+}
 
 const Verify = new CoCommand({
     data: new SlashCommandBuilder()
@@ -24,12 +30,6 @@ const Verify = new CoCommand({
 
             const userEmail = interaction.options.get("email")?.value;
             const userDiscordId = interaction.user.id
-        
-            if (process.env.NODE_ENV === 'production') {
-                dotenv.config({ path: '.env.production' });
-            } else {
-                dotenv.config({ path: '.env.development' });
-            }
             
             const url = process.env.VERIFY_DISCORD_API_ENDPOINT + `?email=${userEmail}&discordId=${userDiscordId}`
             const options = {
@@ -47,22 +47,63 @@ const Verify = new CoCommand({
                         const roleName = "member"
                         const memberRole = interaction.guild?.roles.cache.find(role => role.name === roleName);
                         if (!memberRole) {
-                            interaction.editReply("Role name '" + roleName + "' does not exist.");
+                            const errorEmbed = new EmbedBuilder()
+                                .setColor('#ED4245')
+                                .setTitle('Code[Coogs] Error')
+                                .setURL('https://www.codecoogs.com/')
+                                .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
+                                .setDescription(`Role name '${roleName}' does not exist`)
+                                .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
+
+                            interaction.editReply({ embeds: [errorEmbed] });
                             return
                         }
                         (interaction.member?.roles as GuildMemberRoleManager).add(memberRole);
 
-                        interaction.editReply("Successfully verified user!");
+                        const successEmbed = new EmbedBuilder()
+                            .setColor('#57F287')
+                            .setTitle('Code[Coogs] Success')
+                            .setURL('https://www.codecoogs.com/')
+                            .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
+                            .setDescription("Successfully verified user!")
+                            .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
+
+                        interaction.editReply({ embeds: [successEmbed] });
+                        return
                     }
                     else {
-                        interaction.editReply("Error: " + data.error.message);
+                        const errorEmbed = new EmbedBuilder()
+                            .setColor('#ED4245')
+                            .setTitle('Code[Coogs] Error')
+                            .setURL('https://www.codecoogs.com/')
+                            .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
+                            .setDescription(data.error.message)
+                            .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
+
+                        interaction.editReply({ embeds: [errorEmbed] });
                     }
                 })
                 .catch(error => {
-                    interaction.editReply("Error: " + error);
+                    const errorEmbed = new EmbedBuilder()
+                        .setColor('#ED4245')
+                        .setTitle('Code[Coogs] Error')
+                        .setURL('https://www.codecoogs.com/')
+                        .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
+                        .setDescription(error)
+                        .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
+
+                    interaction.editReply({ embeds: [errorEmbed] });
                 })
         } catch (error) {
-            await interaction.editReply('Error: ' + error);
+            const errorEmbed = new EmbedBuilder()
+                .setColor('#ED4245')
+                .setTitle('Code[Coogs] Error')
+                .setURL('https://www.codecoogs.com/')
+                .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
+                .setDescription(`${error}`)
+                .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
+
+            interaction.editReply({ embeds: [errorEmbed] });
         }
     }
 });
