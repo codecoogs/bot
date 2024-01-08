@@ -67,7 +67,6 @@ const Points = new CoCommand({
                                 .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
                                 .setDescription('View the top 10 members with most points!')
                                 .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
-                                .setTimestamp()
                             data.data.forEach((entry: any, index: number) => {
                                 const rank = (index + 1).toString();
                                 leaderboardEmbed.addFields(
@@ -84,11 +83,19 @@ const Points = new CoCommand({
                         interaction.editReply("Error: " + error);
                     })
             }
-            else if (mentionOptionChose) {
+            else if (mentionOptionChose || (!inputOptionChose && !mentionOptionChose)) {
                 const roleName = interaction.options.get("mention")?.role?.name
                 const mentionedEveryoneOrHere = (roleName == "@everyone") || (roleName == "@here")
                 if (mentionedEveryoneOrHere) {
-                    await interaction.editReply("Don't do that!")
+                    const errorEmbed = new EmbedBuilder()
+                        .setColor('#ED4245')
+                        .setTitle('Code[Coogs] Error')
+                        .setURL('https://www.codecoogs.com/')
+                        .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
+                        .setDescription("Don't mention @everyone or @here")
+                        .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
+
+                    interaction.editReply({ embeds: [errorEmbed] });
                     return
                 }
 
@@ -96,7 +103,15 @@ const Points = new CoCommand({
                 if (mentionedUser) {
                     const mentionedUserHasMemberRole = mentionedUser.roles.cache.some(role => role.name === 'member');
                     if (!mentionedUserHasMemberRole) {
-                        await interaction.editReply("The user you mentioned is not verified.")
+                        const errorEmbed = new EmbedBuilder()
+                            .setColor('#ED4245')
+                            .setTitle('Code[Coogs] Error')
+                            .setURL('https://www.codecoogs.com/')
+                            .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
+                            .setDescription("The user you mentioned is not verified")
+                            .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
+
+                        interaction.editReply({ embeds: [errorEmbed] });
                         return 
                     }
                 }
@@ -104,7 +119,15 @@ const Points = new CoCommand({
                     const user = interaction.member as GuildMember;
                     const hasMemberRole = user.roles.cache.some(role => role.name === 'member');            
                     if (!hasMemberRole) {
-                        await interaction.editReply("You are not verified, use the '/verify' command to verify.")
+                        const errorEmbed = new EmbedBuilder()
+                            .setColor('#ED4245')
+                            .setTitle('Code[Coogs] Error')
+                            .setURL('https://www.codecoogs.com/')
+                            .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
+                            .setDescription("You are not verified, use the '/verify' command to verify.")
+                            .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
+    
+                        interaction.editReply({ embeds: [errorEmbed] });
                         return 
                     }
                 }   
@@ -124,17 +147,53 @@ const Points = new CoCommand({
                     })
                     .then(data => {
                         if (data.success) {
-                            interaction.editReply(`${data.data.first_name} ${data.data.last_name}, you have ${data.data.points} points`);
+                            const pointsEmbed = new EmbedBuilder()
+                                .setColor(0x0099FF)
+                                .setTitle('Code[Coogs] User Points')
+                                .setURL('https://www.codecoogs.com/')
+                                .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
+                                .setDescription('View a users points!')
+                                .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
+
+                            pointsEmbed.addFields(
+                                { name: `${data.data.first_name} ${data.data.last_name}`, value: `${data.data.points} points` }
+                            );
+
+                            interaction.editReply({ embeds: [pointsEmbed] });
                             return
                         }
-                        interaction.editReply("Error: " + data.error.message);
+                        const errorEmbed = new EmbedBuilder()
+                            .setColor('#ED4245')
+                            .setTitle('Code[Coogs] Error')
+                            .setURL('https://www.codecoogs.com/')
+                            .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
+                            .setDescription(`${data.error.message}`)
+                            .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
+
+                        interaction.editReply({ embeds: [errorEmbed] });
                     })
                     .catch(error => {
-                        interaction.editReply("Error: " + error);
+                        const errorEmbed = new EmbedBuilder()
+                            .setColor('#ED4245')
+                            .setTitle('Code[Coogs] Error')
+                            .setURL('https://www.codecoogs.com/')
+                            .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
+                            .setDescription(`${error}`)
+                            .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
+
+                        interaction.editReply({ embeds: [errorEmbed] });
                     })
             }
         } catch (error) {
-            await interaction.editReply('Error: ' + error);
+            const errorEmbed = new EmbedBuilder()
+                .setColor('#ED4245')
+                .setTitle('Code[Coogs] Error')
+                .setURL('https://www.codecoogs.com/')
+                .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
+                .setDescription(`${error}`)
+                .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
+
+            interaction.editReply({ embeds: [errorEmbed] });
         }
     }
 });
