@@ -16,6 +16,30 @@ if (process.env.NODE_ENV === 'production') {
     dotenv.config({ path: '.env.development' });
 }
 
+const embedError = (description: string) => {
+    const errorEmbed = new EmbedBuilder()
+        .setColor('#ED4245')
+        .setTitle('Code[Coogs] Error')
+        .setURL('https://www.codecoogs.com/')
+        .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
+        .setDescription(description)
+        .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
+
+    return errorEmbed;
+}
+
+const embedSuccess = (title: string, description: string) => {
+    const successEmbed = new EmbedBuilder()
+        .setColor(0x0099FF)
+        .setTitle(title)
+        .setURL('https://www.codecoogs.com/')
+        .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
+        .setDescription(description)
+        .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
+
+    return successEmbed
+}
+
 const Points = new CoCommand({
     data: new SlashCommandBuilder()
         .setName("points")
@@ -37,13 +61,15 @@ const Points = new CoCommand({
             const mentionOptionChose = interaction.options.get("mention")
             const inputOptionChose = interaction.options.get("input")
             if (mentionOptionChose && inputOptionChose) {
-                await interaction.editReply("Only choose one option, either 'mention' or 'input'")
+                const embed = embedError("Only choose one option, either 'mention' or 'input'")
+                interaction.editReply({ embeds: [embed] });
                 return
             }
             else if (inputOptionChose) {
                 const inputField = interaction.options.get("input")?.value
                 if (inputField != 'lb') {
-                    await interaction.editReply("The only choices allowed in the input are: 'lb'")
+                    const embed = embedError("The only choices allowed in the input are: 'lb'")
+                    interaction.editReply({ embeds: [embed] });
                     return
                 }
                 const amount = 10;
@@ -60,35 +86,31 @@ const Points = new CoCommand({
                     })
                     .then(data => {
                         if (data.success) {
-                            const leaderboardEmbed = new EmbedBuilder()
-                                .setColor(0x0099FF)
-                                .setTitle('Code[Coogs] Points Leaderboard')
-                                .setURL('https://www.codecoogs.com/')
-                                .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
-                                .setDescription('View the top 10 members with most points!')
-                                .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
-                                .setTimestamp()
+                            const embed = embedSuccess('Code[Coogs] Points Leaderboard', 'View the top 10 members with most points!')
                             data.data.forEach((entry: any, index: number) => {
                                 const rank = (index + 1).toString();
-                                leaderboardEmbed.addFields(
+                                embed.addFields(
                                     { name: `#${rank} - ${entry.first_name} ${entry.last_name}`, value: `${entry.points} points` }
                                 );
                             });
 
-                            interaction.editReply({ embeds: [leaderboardEmbed] });
+                            interaction.editReply({ embeds: [embed] });
                             return
                         }
-                        interaction.editReply("Error: " + data.error.message);
+                        const embed = embedError(data.error.message)
+                        interaction.editReply({ embeds: [embed] });
                     })
                     .catch(error => {
-                        interaction.editReply("Error: " + error);
+                        const embed = embedError(error)
+                        interaction.editReply({ embeds: [embed] });
                     })
             }
-            else if (mentionOptionChose) {
+            else if (mentionOptionChose || (!inputOptionChose && !mentionOptionChose)) {
                 const roleName = interaction.options.get("mention")?.role?.name
                 const mentionedEveryoneOrHere = (roleName == "@everyone") || (roleName == "@here")
                 if (mentionedEveryoneOrHere) {
-                    await interaction.editReply("Don't do that!")
+                    const embed = embedError("Don't mention @everyone or @here")
+                    interaction.editReply({ embeds: [embed] });
                     return
                 }
 
@@ -96,7 +118,8 @@ const Points = new CoCommand({
                 if (mentionedUser) {
                     const mentionedUserHasMemberRole = mentionedUser.roles.cache.some(role => role.name === 'member');
                     if (!mentionedUserHasMemberRole) {
-                        await interaction.editReply("The user you mentioned is not verified.")
+                        const embed = embedError("The user you mentioned is not verified")
+                        interaction.editReply({ embeds: [embed] });
                         return 
                     }
                 }
@@ -104,7 +127,8 @@ const Points = new CoCommand({
                     const user = interaction.member as GuildMember;
                     const hasMemberRole = user.roles.cache.some(role => role.name === 'member');            
                     if (!hasMemberRole) {
-                        await interaction.editReply("You are not verified, use the '/verify' command to verify.")
+                        const embed = embedError("You are not verified, use the '/verify' command to verify.")
+                        interaction.editReply({ embeds: [embed] });
                         return 
                     }
                 }   
@@ -124,17 +148,25 @@ const Points = new CoCommand({
                     })
                     .then(data => {
                         if (data.success) {
-                            interaction.editReply(`${data.data.first_name} ${data.data.last_name}, you have ${data.data.points} points`);
+                            const embed = embedSuccess('Code[Coogs] User Points', 'View a users points!')
+                            embed.addFields(
+                                { name: `${data.data.first_name} ${data.data.last_name}`, value: `${data.data.points} points` }
+                            );
+
+                            interaction.editReply({ embeds: [embed] });
                             return
                         }
-                        interaction.editReply("Error: " + data.error.message);
+                        const embed = embedError(data.error.message)
+                        interaction.editReply({ embeds: [embed] });
                     })
                     .catch(error => {
-                        interaction.editReply("Error: " + error);
+                        const embed = embedError(error)
+                        interaction.editReply({ embeds: [embed] });
                     })
             }
         } catch (error) {
-            await interaction.editReply('Error: ' + error);
+            const embed = embedError(`${error}`)
+            interaction.editReply({ embeds: [embed] });
         }
     }
 });
