@@ -1,5 +1,3 @@
-import type { CommandInteraction } from "discord.js";
-
 import { bot } from "..";
 import { CoCoEvent } from "../structures";
 

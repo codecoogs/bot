@@ -1,7 +1,6 @@
 import {
     ApplicationCommandDataResolvable,
     Client,
-    ClientEvents,
     Collection,
     GatewayIntentBits,
     Routes

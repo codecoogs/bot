@@ -1,24 +1,22 @@
 import type {
-    ClientEvents,
-    CommandInteraction,
-    SlashCommandBuilder
+    ChatInputCommandInteraction,
+    SlashCommandBuilder,
+    SlashCommandSubcommandsOnlyBuilder
 } from "discord.js";
 
-import type { CoCo } from "./structures";
-
 interface CommandExecuteOptions {
-    interaction: CommandInteraction;
+    interaction: ChatInputCommandInteraction;
 };
 
-type CommandExecute = (options: CommandExecuteOptions) => Promise<any> | any;
+type CommandExecute = (options: CommandExecuteOptions) => Promise<void>;
 
 export type CoCommandOptions = {
-    data: Partial<SlashCommandBuilder>;
+    data: Partial<SlashCommandBuilder> | SlashCommandSubcommandsOnlyBuilder;
     execute: CommandExecute;
 };
 
 
-type EventExecute = (options: any) => Promise<any> | any;
+type EventExecute = (options: any) => Promise<void> | void;
 
 export type CoCoEventOptions = {
     name: string;
