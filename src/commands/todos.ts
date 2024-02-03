@@ -1,5 +1,21 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
 import { CoCommand } from "../structures";
+import { embedSuccess, embedError } from "../constants/embeds";
+
+const dotenv = require('dotenv');
+
+if (process.env.NODE_ENV === 'production') {
+    dotenv.config({ path: '.env.production' });
+} else {
+    dotenv.config({ path: '.env.development' });
+}
+
+type Todo = {
+    id: number,
+    title: string,
+    deadline: string,
+    completed: boolean
+}
 
 const Todos = new CoCommand({
     data: new SlashCommandBuilder()
@@ -57,8 +73,7 @@ const Todos = new CoCommand({
                 await interaction.editReply(`Viewing todos for ${mention ? mention : 'you'}.`);
                 break;
             case 'all':
-                // TODO: Add logic for viewing all todos
-                await interaction.editReply("Viewing all todos.");
+                handleAllTodos(interaction);
                 break;
             case 'add':
                 // TODO: Add logic for adding todos
@@ -86,3 +101,42 @@ const Todos = new CoCommand({
 });
 
 export default Todos;
+
+const handleAllTodos = (interaction: ChatInputCommandInteraction) => {
+    const url = process.env.TODOS_API_ENDPOINT + '';
+    const options = {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }
+    try {
+        fetch(url, options)
+        .then(res => {
+            return res.json()
+        })
+        .then(data => {
+            if (data.success) {
+                const embed = embedSuccess("Code[Coogs] Todos", "Here are all todos, sorted by deadline")
+                data.data.forEach((entry: Todo, index: number) => {
+                    embed.addFields(
+                        { name: `${entry.id.toString()} - ${entry.title} [${entry.completed ? 'COMPLETE' : 'INCOMPLETE'}]`, value: `Due ${entry.deadline}` },
+                    );
+                });
+                interaction.editReply({ embeds: [embed] });
+                return
+            }
+            else {
+                const embed = embedError(data.error.message)
+                interaction.editReply({ embeds: [embed] });
+            }
+        })
+        .catch(error => {
+            const embed = embedError(error.toString())
+            interaction.editReply({ embeds: [embed] });
+        })
+    } catch (error) {
+        const embed = embedError(`${error}`)
+        interaction.editReply({ embeds: [embed] });
+    }
+}
