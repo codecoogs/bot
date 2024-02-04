@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
+import { SlashCommandBuilder, ChatInputCommandInteraction, GuildMember } from "discord.js";
 import { CoCommand } from "../structures";
 import { embedSuccess, embedError } from "../constants/embeds";
 
@@ -68,9 +68,7 @@ const Todos = new CoCommand({
 
         switch(subCommand) {
             case 'view':
-                // TODO: Add logic for viewing todos
-                const mention = interaction.options.getMentionable('mention');
-                await interaction.editReply(`Viewing todos for ${mention ? mention : 'you'}.`);
+                handleGetAllTodosOfUser(interaction)
                 break;
             case 'all':
                 handleAllTodos(interaction);
@@ -78,9 +76,10 @@ const Todos = new CoCommand({
             case 'add':
                 // TODO: Add logic for adding todos
                 // NOTE: This should validate that the deadline is a valid date
-                const title = interaction.options.getString('title');
-                const deadline = interaction.options.getString('deadline');
-                await interaction.editReply(`Adding todo: ${title} with deadline ${deadline}.`);
+                const title = interaction.options.getString('title') as string;
+                const deadline = interaction.options.getString('deadline') as string;
+                handleAddTodos(interaction, title, deadline)
+                //await interaction.editReply(`Adding todo: ${title} with deadline ${deadline}.`);
                 break;
             case 'complete':
                 // TODO: Add logic for completing todos
@@ -102,6 +101,54 @@ const Todos = new CoCommand({
 
 export default Todos;
 
+const handleGetAllTodosOfUser = (interaction: ChatInputCommandInteraction) => {
+    const mentionedUser = interaction.options.get("mention")?.member as GuildMember;
+    const discordId = mentionedUser ? mentionedUser.id : interaction.user.id;
+    const discordName = mentionedUser ? mentionedUser.displayName : interaction.user.username
+
+    const url = process.env.TODOS_API_ENDPOINT + `?discord_id=${discordId}`;
+    const options = {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }
+    try {
+        fetch(url, options)
+        .then(res => {
+            return res.json()
+        })
+        .then(data => {
+            if (data.success) {
+                if (!data.data) {
+                    const embed = embedSuccess("Code[Coogs] Todos", `${discordName} has no todos, good job!`)
+                    interaction.editReply({ embeds: [embed] });
+                    return
+                }
+                const embed = embedSuccess("Code[Coogs] Todos", `Here are all todos for ${discordName}, sorted by deadline`)
+                data.data.forEach((entry: Todo) => {
+                    embed.addFields(
+                        { name: `${entry.id.toString()} - ${entry.title} [${entry.completed ? 'COMPLETE' : 'INCOMPLETE'}]`, value: `Due ${entry.deadline}` },
+                    );
+                });
+                interaction.editReply({ embeds: [embed] });
+                return
+            }
+            else {
+                const embed = embedError(data.error.message)
+                interaction.editReply({ embeds: [embed] });
+            }
+        })
+        .catch(error => {
+            const embed = embedError(error.toString())
+            interaction.editReply({ embeds: [embed] });
+        })
+    } catch (error) {
+        const embed = embedError(`${error}`)
+        interaction.editReply({ embeds: [embed] });
+    }
+}
+
 const handleAllTodos = (interaction: ChatInputCommandInteraction) => {
     const url = process.env.TODOS_API_ENDPOINT + '';
     const options = {
@@ -117,12 +164,66 @@ const handleAllTodos = (interaction: ChatInputCommandInteraction) => {
         })
         .then(data => {
             if (data.success) {
+                if (!data.data) {
+                    const embed = embedSuccess("Code[Coogs] Todos", "There are currently no todos, good job!")
+                    interaction.editReply({ embeds: [embed] });
+                    return
+                }
                 const embed = embedSuccess("Code[Coogs] Todos", "Here are all todos, sorted by deadline")
                 data.data.forEach((entry: Todo, index: number) => {
                     embed.addFields(
                         { name: `${entry.id.toString()} - ${entry.title} [${entry.completed ? 'COMPLETE' : 'INCOMPLETE'}]`, value: `Due ${entry.deadline}` },
                     );
                 });
+                interaction.editReply({ embeds: [embed] });
+                return
+            }
+            else {
+                const embed = embedError(data.error.message)
+                interaction.editReply({ embeds: [embed] });
+            }
+        })
+        .catch(error => {
+            const embed = embedError(error.toString())
+            interaction.editReply({ embeds: [embed] });
+        })
+    } catch (error) {
+        const embed = embedError(`${error}`)
+        interaction.editReply({ embeds: [embed] });
+    }
+}
+
+const isProperDateFormat = (dateString: string) => {
+    const pattern: RegExp = /^\d{2}-\d{2}-\d{4}$/;
+    return pattern.test(dateString);
+}
+
+const handleAddTodos = (interaction: ChatInputCommandInteraction, title: string, deadline: string) => {
+    if (!isProperDateFormat(deadline)) {
+        const embed = embedError("Enter a valid date (MM-DD-YYYY)")
+        interaction.editReply({ embeds: [embed] });
+        return
+    }
+
+    const url = process.env.TODOS_API_ENDPOINT + '';
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            title: title,
+            deadline: deadline
+        })
+    }
+    try {
+        fetch(url, options)
+        .then(res => {
+            return res.json()
+        })
+        .then(data => {
+            if (data.success) {
+                const embed = embedSuccess("Code[Coogs] Todos", `Adding todo: ${title} with deadline ${deadline}.`)
                 interaction.editReply({ embeds: [embed] });
                 return
             }
