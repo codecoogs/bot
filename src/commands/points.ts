@@ -55,17 +55,20 @@ const isMember = (user: GuildMember) => {
 
 const handleViewPoints = (interaction: ChatInputCommandInteraction) => {
     const mentionedUser = interaction.options.get("mention")?.member as GuildMember;
-    if (mentionedUser && !isMember(mentionedUser)) {
-        const embed = embedError("The user you mentioned is not verified.")
-        interaction.editReply({ embeds: [embed] });
-        return 
-    }
-
-    const user = interaction.member as GuildMember;
-    if (!isMember(user)) {
-        const embed = embedError("You are not verified, use the '/verify' command to verify.")
-        interaction.editReply({ embeds: [embed] });
-        return 
+    if (mentionedUser) {
+        if (!isMember(mentionedUser)) {
+            const embed = embedError("The user you mentioned is not verified.")
+            interaction.editReply({ embeds: [embed] });
+            return 
+        }
+    } 
+    else {
+        const user = interaction.member as GuildMember;
+        if (!isMember(user)) {
+            const embed = embedError("You are not verified, use the '/verify' command to verify.")
+            interaction.editReply({ embeds: [embed] });
+            return 
+        }
     }
 
     const discordId = mentionedUser ? mentionedUser.id : interaction.user.id;
