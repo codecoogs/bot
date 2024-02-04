@@ -44,7 +44,11 @@ const Todos = new CoCommand({
                 .addStringOption(option => 
                     option.setName("deadline")
                         .setDescription("Enter a date (MM-DD-YYYY)")
-                        .setRequired(true)))
+                        .setRequired(true))
+                .addMentionableOption(option => 
+                    option.setName("mention")
+                        .setDescription("Mention a discord user")
+                        .setRequired(false)))
         .addSubcommand(subcommand =>
             subcommand
                 .setName("complete")
@@ -187,6 +191,10 @@ const isProperDateFormat = (dateString: string) => {
 }
 
 const handleAddTodos = (interaction: ChatInputCommandInteraction) => {
+    const mentionedUser = interaction.options.get("mention")?.member as GuildMember;
+    const discordId = mentionedUser ? mentionedUser.id : interaction.user.id;
+    const discordName = mentionedUser ? mentionedUser.displayName : interaction.user.username
+
     const title = interaction.options.getString('title') as string;
     const deadline = interaction.options.getString('deadline') as string;
 
@@ -196,7 +204,7 @@ const handleAddTodos = (interaction: ChatInputCommandInteraction) => {
         return
     }
 
-    const url = process.env.TODOS_API_ENDPOINT + '';
+    const url = process.env.TODOS_API_ENDPOINT + `?discord_id=${discordId}`;
     const options = {
         method: "POST",
         headers: {
@@ -204,7 +212,8 @@ const handleAddTodos = (interaction: ChatInputCommandInteraction) => {
         },
         body: JSON.stringify({
             title: title,
-            deadline: deadline
+            deadline: deadline,
+            completed: false
         })
     }
     try {
@@ -214,7 +223,7 @@ const handleAddTodos = (interaction: ChatInputCommandInteraction) => {
         })
         .then(data => {
             if (data.success) {
-                const embed = embedSuccess("Code[Coogs] Todos", `Adding todo: ${title} with deadline ${deadline}.`)
+                const embed = embedSuccess("Code[Coogs] Todos", `Assigning todo to ${discordName}: ${title} with deadline ${deadline}.`)
                 interaction.editReply({ embeds: [embed] });
                 return
             }
