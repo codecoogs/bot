@@ -74,13 +74,10 @@ const Todos = new CoCommand({
                 handleAllTodos(interaction);
                 break;
             case 'add':
-                handleAddTodos(interaction)
+                handleAddTodos(interaction);
                 break;
             case 'complete':
-                // TODO: Add logic for completing todos
-                // NOTE: This should only be available to executive roles
-                const completeId = interaction.options.getInteger('id');
-                await interaction.editReply(`Marking todo ID ${completeId} as completed.`);
+                handleUpdateTodoCompletion(interaction);
                 break;
             case 'remove':
                 // TODO: Add logic for removing todos
@@ -165,6 +162,7 @@ const handleAllTodos = (interaction: ChatInputCommandInteraction) => {
                     return
                 }
                 const embed = embedSuccess("Code[Coogs] Todos", "Here are all todos, sorted by deadline")
+                // TODO: fix potential error 'Invalid number value', can occur when too many todos on an embed due to discords text on embed limit
                 data.data.forEach((entry: Todo, index: number) => {
                     embed.addFields(
                         { name: `${entry.id.toString()} - ${entry.title} [${entry.completed ? 'COMPLETE' : 'INCOMPLETE'}]`, value: `Due ${entry.deadline}` },
@@ -222,6 +220,55 @@ const handleAddTodos = (interaction: ChatInputCommandInteraction) => {
         .then(data => {
             if (data.success) {
                 const embed = embedSuccess("Code[Coogs] Todos", `Adding todo: ${title} with deadline ${deadline}.`)
+                interaction.editReply({ embeds: [embed] });
+                return
+            }
+            else {
+                const embed = embedError(data.error.message)
+                interaction.editReply({ embeds: [embed] });
+            }
+        })
+        .catch(error => {
+            const embed = embedError(error.toString())
+            interaction.editReply({ embeds: [embed] });
+        })
+    } catch (error) {
+        const embed = embedError(`${error}`)
+        interaction.editReply({ embeds: [embed] });
+    }
+}
+
+const isExecutive = (user: GuildMember) => {
+    return user.roles.cache.some(role => role.name === 'Executive');            
+}
+
+const handleUpdateTodoCompletion = (interaction: ChatInputCommandInteraction) => {
+    const user = interaction.member as GuildMember;
+    if (!isExecutive(user)) {
+        const embed = embedError("You do not have permission to use this command.")
+        interaction.editReply({ embeds: [embed] });
+        return 
+    }
+
+    const id = interaction.options.getInteger('id');
+    const url = process.env.TODOS_API_ENDPOINT + `/completed?id=${id}`;
+    const options = {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            completed: true,
+        })
+    }
+    try {
+        fetch(url, options)
+        .then(res => {
+            return res.json()
+        })
+        .then(data => {
+            if (data.success) {
+                const embed = embedSuccess("Code[Coogs] Todos", `Marked todo ID ${id} as completed.`)
                 interaction.editReply({ embeds: [embed] });
                 return
             }
