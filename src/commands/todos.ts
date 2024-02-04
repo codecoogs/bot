@@ -80,13 +80,8 @@ const Todos = new CoCommand({
                 handleUpdateTodoCompletion(interaction);
                 break;
             case 'remove':
-                // TODO: Add logic for removing todos
-                // NOTE: This should only be available to executive roles
-                const removeId = interaction.options.getInteger('id');
-                await interaction.editReply(`Removing todo ID ${removeId}.`);
+                handleRemoveTodo(interaction);
                 break;
-            default:
-                await interaction.editReply("Unknown command.");
         }
     }
 });
@@ -269,6 +264,48 @@ const handleUpdateTodoCompletion = (interaction: ChatInputCommandInteraction) =>
         .then(data => {
             if (data.success) {
                 const embed = embedSuccess("Code[Coogs] Todos", `Marked todo ID ${id} as completed.`)
+                interaction.editReply({ embeds: [embed] });
+                return
+            }
+            else {
+                const embed = embedError(data.error.message)
+                interaction.editReply({ embeds: [embed] });
+            }
+        })
+        .catch(error => {
+            const embed = embedError(error.toString())
+            interaction.editReply({ embeds: [embed] });
+        })
+    } catch (error) {
+        const embed = embedError(`${error}`)
+        interaction.editReply({ embeds: [embed] });
+    }
+}
+
+const handleRemoveTodo = (interaction: ChatInputCommandInteraction) => {
+    const user = interaction.member as GuildMember;
+    if (!isExecutive(user)) {
+        const embed = embedError("You do not have permission to use this command.")
+        interaction.editReply({ embeds: [embed] });
+        return 
+    }
+
+    const id = interaction.options.getInteger('id');
+    const url = process.env.TODOS_API_ENDPOINT + `?id=${id}`;
+    const options = {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }
+    try {
+        fetch(url, options)
+        .then(res => {
+            return res.json()
+        })
+        .then(data => {
+            if (data.success) {
+                const embed = embedSuccess("Code[Coogs] Todos", `Removed todo ID ${id}.`)
                 interaction.editReply({ embeds: [embed] });
                 return
             }
