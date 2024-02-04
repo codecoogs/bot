@@ -4,40 +4,16 @@ import {
     SlashCommandMentionableOption,
     GuildMember,
     SlashCommandStringOption,
-    EmbedBuilder
 } from "discord.js";
-const dotenv = require('dotenv');
-
 import { CoCommand } from "../structures";
+import { embedSuccess, embedError } from "../constants/embeds";
+
+const dotenv = require('dotenv');
 
 if (process.env.NODE_ENV === 'production') {
     dotenv.config({ path: '.env.production' });
 } else {
     dotenv.config({ path: '.env.development' });
-}
-
-const embedError = (description: string) => {
-    const errorEmbed = new EmbedBuilder()
-        .setColor('#ED4245')
-        .setTitle('Code[Coogs] Error')
-        .setURL('https://www.codecoogs.com/')
-        .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
-        .setDescription(description)
-        .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
-
-    return errorEmbed;
-}
-
-const embedSuccess = (title: string, description: string) => {
-    const successEmbed = new EmbedBuilder()
-        .setColor(0x0099FF)
-        .setTitle(title)
-        .setURL('https://www.codecoogs.com/')
-        .setAuthor({ name: 'CoCo Bot', iconURL: 'https://www.codecoogs.com/assets/determined-coco.5399a2c0.webp', url: 'https://www.codecoogs.com/' })
-        .setDescription(description)
-        .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
-
-    return successEmbed
 }
 
 const Points = new CoCommand({
@@ -101,7 +77,7 @@ const Points = new CoCommand({
                         interaction.editReply({ embeds: [embed] });
                     })
                     .catch(error => {
-                        const embed = embedError(error)
+                        const embed = embedError(error.toString())
                         interaction.editReply({ embeds: [embed] });
                     })
             }
@@ -160,7 +136,7 @@ const Points = new CoCommand({
                         interaction.editReply({ embeds: [embed] });
                     })
                     .catch(error => {
-                        const embed = embedError(error)
+                        const embed = embedError(error.toString())
                         interaction.editReply({ embeds: [embed] });
                     })
             }
