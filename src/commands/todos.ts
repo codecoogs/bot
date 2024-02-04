@@ -112,7 +112,7 @@ const handleGetAllTodosOfUser = (interaction: ChatInputCommandInteraction) => {
                 const embed = embedSuccess("Code[Coogs] Todos", `Here are all todos for **${discordName}**, sorted by deadline`)
                 data.data.forEach((entry: Todo) => {
                     embed.addFields(
-                        { name: `${entry.id.toString()} - ${entry.title} [${entry.completed ? 'COMPLETE' : 'INCOMPLETE'}]`, value: `Due ${entry.deadline}` },
+                        { name: `${entry.id.toString()} - ${entry.title} - Due ${entry.deadline}`, value: `${entry.completed ? '✅ COMPLETE' : '🚧 INCOMPLETE'}` },
                     );
                 });
                 interaction.editReply({ embeds: [embed] });
@@ -157,7 +157,7 @@ const handleAllTodos = (interaction: ChatInputCommandInteraction) => {
                 // TODO: fix potential error 'Invalid number value', can occur when too many todos on an embed due to discords text on embed limit
                 data.data.forEach((entry: Todo, index: number) => {
                     embed.addFields(
-                        { name: `${entry.id.toString()} - ${entry.title} [${entry.completed ? 'COMPLETE' : 'INCOMPLETE'}]`, value: `Due ${entry.deadline}` },
+                        { name: `${entry.id.toString()} - ${entry.title} - Due ${entry.deadline}`, value: `${entry.completed ? '✅ COMPLETE' : '🚧 INCOMPLETE'}` },
                     );
                 });
                 interaction.editReply({ embeds: [embed] });
