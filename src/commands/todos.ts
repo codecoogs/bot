@@ -74,12 +74,7 @@ const Todos = new CoCommand({
                 handleAllTodos(interaction);
                 break;
             case 'add':
-                // TODO: Add logic for adding todos
-                // NOTE: This should validate that the deadline is a valid date
-                const title = interaction.options.getString('title') as string;
-                const deadline = interaction.options.getString('deadline') as string;
-                handleAddTodos(interaction, title, deadline)
-                //await interaction.editReply(`Adding todo: ${title} with deadline ${deadline}.`);
+                handleAddTodos(interaction)
                 break;
             case 'complete':
                 // TODO: Add logic for completing todos
@@ -198,7 +193,10 @@ const isProperDateFormat = (dateString: string) => {
     return pattern.test(dateString);
 }
 
-const handleAddTodos = (interaction: ChatInputCommandInteraction, title: string, deadline: string) => {
+const handleAddTodos = (interaction: ChatInputCommandInteraction) => {
+    const title = interaction.options.getString('title') as string;
+    const deadline = interaction.options.getString('deadline') as string;
+
     if (!isProperDateFormat(deadline)) {
         const embed = embedError("Enter a valid date (MM-DD-YYYY)")
         interaction.editReply({ embeds: [embed] });
