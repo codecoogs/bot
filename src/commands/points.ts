@@ -6,14 +6,7 @@ import {
 } from "discord.js";
 import { CoCommand } from "../structures";
 import { embedSuccess, embedError } from "../constants/embeds";
-
-const dotenv = require('dotenv');
-
-if (process.env.NODE_ENV === 'production') {
-    dotenv.config({ path: '.env.production' });
-} else {
-    dotenv.config({ path: '.env.development' });
-}
+import { API_BASE_URL } from "../constants/api";
 
 const Points = new CoCommand({
     data: new SlashCommandBuilder()
@@ -73,7 +66,7 @@ const handleViewPoints = (interaction: ChatInputCommandInteraction) => {
 
     const discordId = mentionedUser ? mentionedUser.id : interaction.user.id;
 
-    const url = process.env.POINTS_API_ENDPOINT + `?discordId=${discordId}`
+    const url = `${API_BASE_URL}/users/points?discordId=${discordId}`
     const options = {
         method: "GET",
         headers: {
@@ -105,7 +98,7 @@ const handleViewPoints = (interaction: ChatInputCommandInteraction) => {
 
 const handleLeaderboard = (interaction: ChatInputCommandInteraction) => {
     const amount = 10;
-    const url = process.env.POINTS_LEADERBOARD_API_ENDPOINT + `?top=${amount}`
+    const url = `${API_BASE_URL}/users/points/leaderboard?top=${amount}`
     const options = {
         method: "GET",
         headers: {

@@ -1,14 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, GuildMember } from "discord.js";
 import { CoCommand } from "../structures";
 import { embedSuccess, embedError } from "../constants/embeds";
-
-const dotenv = require('dotenv');
-
-if (process.env.NODE_ENV === 'production') {
-    dotenv.config({ path: '.env.production' });
-} else {
-    dotenv.config({ path: '.env.development' });
-}
+import { API_BASE_URL } from "../constants/api";
 
 type Todo = {
     id: number,
@@ -97,7 +90,7 @@ const handleGetAllTodosOfUser = (interaction: ChatInputCommandInteraction) => {
     const discordId = mentionedUser ? mentionedUser.id : interaction.user.id;
     const discordName = mentionedUser ? mentionedUser.displayName : interaction.user.username
 
-    const url = process.env.TODOS_API_ENDPOINT + `?discord_id=${discordId}`;
+    const url = `${API_BASE_URL}/todos?discord_id=${discordId}`;
     const options = {
         method: "GET",
         headers: {
@@ -141,7 +134,7 @@ const handleGetAllTodosOfUser = (interaction: ChatInputCommandInteraction) => {
 }
 
 const handleAllTodos = (interaction: ChatInputCommandInteraction) => {
-    const url = process.env.TODOS_API_ENDPOINT + '';
+    const url = `${API_BASE_URL}/todos`;
     const options = {
         method: "GET",
         headers: {
@@ -204,7 +197,7 @@ const handleAddTodos = (interaction: ChatInputCommandInteraction) => {
         return
     }
 
-    const url = process.env.TODOS_API_ENDPOINT + `?discord_id=${discordId}`;
+    const url = `${API_BASE_URL}/todos?discord_id=${discordId}`;
     const options = {
         method: "POST",
         headers: {
@@ -255,7 +248,7 @@ const handleUpdateTodoCompletion = (interaction: ChatInputCommandInteraction) =>
     }
 
     const id = interaction.options.getInteger('id');
-    const url = process.env.TODOS_API_ENDPOINT + `/completed?id=${id}`;
+    const url = `${API_BASE_URL}/todos/completed?id=${id}`;
     const options = {
         method: "PATCH",
         headers: {
@@ -300,7 +293,7 @@ const handleRemoveTodo = (interaction: ChatInputCommandInteraction) => {
     }
 
     const id = interaction.options.getInteger('id');
-    const url = process.env.TODOS_API_ENDPOINT + `?id=${id}`;
+    const url = `${API_BASE_URL}/todos?id=${id}`;
     const options = {
         method: "DELETE",
         headers: {

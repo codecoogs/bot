@@ -5,14 +5,7 @@ import {
 } from "discord.js";
 import { CoCommand } from "../structures";
 import { embedSuccess, embedError } from "../constants/embeds";
-
-const dotenv = require('dotenv');
-
-if (process.env.NODE_ENV === 'production') {
-    dotenv.config({ path: '.env.production' });
-} else {
-    dotenv.config({ path: '.env.development' });
-}
+import { API_BASE_URL } from "../constants/api";
 
 const Verify = new CoCommand({
     data: new SlashCommandBuilder()
@@ -30,8 +23,7 @@ const Verify = new CoCommand({
 
             const userEmail = interaction.options.get("email")?.value;
             const userDiscordId = interaction.user.id
-            
-            const url = process.env.VERIFY_DISCORD_API_ENDPOINT + `?email=${userEmail}&discordId=${userDiscordId}`
+            const url = `${API_BASE_URL}/users/discord/verify?email=${userEmail}&discordId=${userDiscordId}`
             const options = {
                 method: "PATCH",
                 headers: {
