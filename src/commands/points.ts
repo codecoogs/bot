@@ -58,7 +58,7 @@ const handleViewPoints = (interaction: ChatInputCommandInteraction) => {
     else {
         const user = interaction.member as GuildMember;
         if (!isMember(user)) {
-            const embed = embedError("You are not verified, use the '/verify' command to verify.")
+            const embed = embedError("You are not verified, use the `/verify` command to verify.")
             interaction.editReply({ embeds: [embed] });
             return 
         }

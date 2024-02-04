@@ -105,11 +105,11 @@ const handleGetAllTodosOfUser = (interaction: ChatInputCommandInteraction) => {
         .then(data => {
             if (data.success) {
                 if (!data.data) {
-                    const embed = embedSuccess("Code[Coogs] Todos", `${discordName} has no todos, good job!`)
+                    const embed = embedSuccess("Code[Coogs] Todos", `**${discordName}** has no todos, good job!`)
                     interaction.editReply({ embeds: [embed] });
                     return
                 }
-                const embed = embedSuccess("Code[Coogs] Todos", `Here are all todos for ${discordName}, sorted by deadline`)
+                const embed = embedSuccess("Code[Coogs] Todos", `Here are all todos for **${discordName}**, sorted by deadline`)
                 data.data.forEach((entry: Todo) => {
                     embed.addFields(
                         { name: `${entry.id.toString()} - ${entry.title} [${entry.completed ? 'COMPLETE' : 'INCOMPLETE'}]`, value: `Due ${entry.deadline}` },
@@ -216,7 +216,7 @@ const handleAddTodos = (interaction: ChatInputCommandInteraction) => {
         })
         .then(data => {
             if (data.success) {
-                const embed = embedSuccess("Code[Coogs] Todos", `Assigning todo to ${discordName}: ${title} with deadline ${deadline}.`)
+                const embed = embedSuccess("Code[Coogs] Todos", `Assigning todo to **${discordName}**: **${title}** with deadline **${deadline}**.`)
                 interaction.editReply({ embeds: [embed] });
                 return
             }
@@ -265,7 +265,7 @@ const handleUpdateTodoCompletion = (interaction: ChatInputCommandInteraction) =>
         })
         .then(data => {
             if (data.success) {
-                const embed = embedSuccess("Code[Coogs] Todos", `Marked todo ID ${id} as completed.`)
+                const embed = embedSuccess("Code[Coogs] Todos", `Marked todo ID **${id}** as completed.`)
                 interaction.editReply({ embeds: [embed] });
                 return
             }
@@ -307,7 +307,7 @@ const handleRemoveTodo = (interaction: ChatInputCommandInteraction) => {
         })
         .then(data => {
             if (data.success) {
-                const embed = embedSuccess("Code[Coogs] Todos", `Removed todo ID ${id}.`)
+                const embed = embedSuccess("Code[Coogs] Todos", `Removed todo ID **${id}**.`)
                 interaction.editReply({ embeds: [embed] });
                 return
             }
