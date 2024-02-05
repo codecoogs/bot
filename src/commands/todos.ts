@@ -65,19 +65,19 @@ const Todos = new CoCommand({
 
         switch(subCommand) {
             case 'view':
-                handleGetAllTodosOfUser(interaction)
+                await handleGetAllTodosOfUser(interaction)
                 break;
             case 'all':
-                handleAllTodos(interaction);
+                await handleAllTodos(interaction);
                 break;
             case 'add':
-                handleAddTodos(interaction);
+                await handleAddTodos(interaction);
                 break;
             case 'complete':
-                handleUpdateTodoCompletion(interaction);
+                await handleUpdateTodoCompletion(interaction);
                 break;
             case 'remove':
-                handleRemoveTodo(interaction);
+                await handleRemoveTodo(interaction);
                 break;
         }
     }

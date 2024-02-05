@@ -31,10 +31,10 @@ const Points = new CoCommand({
 
         switch(subCommand) {
             case 'view':
-                handleViewPoints(interaction)
+                await handleViewPoints(interaction)
                 break;
             case 'leaderboard':
-                handleLeaderboard(interaction);
+                await handleLeaderboard(interaction);
                 break;
         }
     }
