@@ -65,19 +65,19 @@ const Todos = new CoCommand({
 
         switch(subCommand) {
             case 'view':
-                handleGetAllTodosOfUser(interaction)
+                await handleGetAllTodosOfUser(interaction)
                 break;
             case 'all':
-                handleAllTodos(interaction);
+                await handleAllTodos(interaction);
                 break;
             case 'add':
-                handleAddTodos(interaction);
+                await handleAddTodos(interaction);
                 break;
             case 'complete':
-                handleUpdateTodoCompletion(interaction);
+                await handleUpdateTodoCompletion(interaction);
                 break;
             case 'remove':
-                handleRemoveTodo(interaction);
+                await handleRemoveTodo(interaction);
                 break;
         }
     }
@@ -85,7 +85,7 @@ const Todos = new CoCommand({
 
 export default Todos;
 
-const handleGetAllTodosOfUser = (interaction: ChatInputCommandInteraction) => {
+const handleGetAllTodosOfUser = async (interaction: ChatInputCommandInteraction) => {
     const mentionedUser = interaction.options.get("mention")?.member as GuildMember;
     const discordId = mentionedUser ? mentionedUser.id : interaction.user.id;
     const discordName = mentionedUser ? mentionedUser.displayName : interaction.user.username
@@ -98,42 +98,34 @@ const handleGetAllTodosOfUser = (interaction: ChatInputCommandInteraction) => {
         }
     }
     try {
-        fetch(url, options)
-        .then(res => {
-            return res.json()
-        })
-        .then(data => {
-            if (data.success) {
-                if (!data.data) {
-                    const embed = embedSuccess("Code[Coogs] Todos", `**${discordName}** has no todos, good job!`)
-                    interaction.editReply({ embeds: [embed] });
-                    return
-                }
-                const embed = embedSuccess("Code[Coogs] Todos", `Here are all todos for **${discordName}**, sorted by deadline`)
-                data.data.forEach((entry: Todo) => {
-                    embed.addFields(
-                        { name: `${entry.id.toString()} - ${entry.title} - Due ${entry.deadline}`, value: `${entry.completed ? '✅ COMPLETE' : '🚧 INCOMPLETE'}` },
-                    );
-                });
+        const res = await fetch(url, options);
+        const data = await res.json();
+    
+        if (data.success) {
+            if (!data.data) {
+                const embed = embedSuccess("Code[Coogs] Todos", `**${discordName}** has no todos, good job!`);
                 interaction.editReply({ embeds: [embed] });
-                return
+                return;
             }
-            else {
-                const embed = embedError(data.error.message)
-                interaction.editReply({ embeds: [embed] });
-            }
-        })
-        .catch(error => {
-            const embed = embedError(error.toString())
+            const embed = embedSuccess("Code[Coogs] Todos", `Here are all todos for **${discordName}**, sorted by deadline`);
+            data.data.forEach((entry: Todo) => {
+                embed.addFields(
+                    { name: `${entry.id.toString()} - ${entry.title} - Due ${entry.deadline}`, value: `${entry.completed ? '✅ COMPLETE' : '🚧 INCOMPLETE'}` },
+                );
+            });
             interaction.editReply({ embeds: [embed] });
-        })
+            return;
+        } else {
+            const embed = embedError(data.error.message);
+            interaction.editReply({ embeds: [embed] });
+        }
     } catch (error) {
         const embed = embedError(`${error}`)
         interaction.editReply({ embeds: [embed] });
     }
 }
 
-const handleAllTodos = (interaction: ChatInputCommandInteraction) => {
+const handleAllTodos = async (interaction: ChatInputCommandInteraction) => {
     const url = `${API_BASE_URL}/todos`;
     const options = {
         method: "GET",
@@ -142,36 +134,27 @@ const handleAllTodos = (interaction: ChatInputCommandInteraction) => {
         }
     }
     try {
-        fetch(url, options)
-        .then(res => {
-            return res.json()
-        })
-        .then(data => {
-            if (data.success) {
-                if (!data.data) {
-                    const embed = embedSuccess("Code[Coogs] Todos", "There are currently no todos, good job!")
-                    interaction.editReply({ embeds: [embed] });
-                    return
-                }
-                const embed = embedSuccess("Code[Coogs] Todos", "Here are all todos, sorted by deadline")
-                // TODO: fix potential error 'Invalid number value', can occur when too many todos on an embed due to discords text on embed limit
-                data.data.forEach((entry: Todo, index: number) => {
-                    embed.addFields(
-                        { name: `${entry.id.toString()} - ${entry.title} - Due ${entry.deadline}`, value: `${entry.completed ? '✅ COMPLETE' : '🚧 INCOMPLETE'}` },
-                    );
-                });
+        const res = await fetch(url, options);
+        const data = await res.json();
+
+        if (data.success) {
+            if (!data.data) {
+                const embed = embedSuccess("Code[Coogs] Todos", "There are currently no todos, good job!");
                 interaction.editReply({ embeds: [embed] });
-                return
+                return;
             }
-            else {
-                const embed = embedError(data.error.message)
-                interaction.editReply({ embeds: [embed] });
-            }
-        })
-        .catch(error => {
-            const embed = embedError(error.toString())
+            const embed = embedSuccess("Code[Coogs] Todos", "Here are all todos, sorted by deadline");
+            data.data.forEach((entry: Todo, index: number) => {
+                embed.addFields(
+                    { name: `${entry.id.toString()} - ${entry.title} - Due ${entry.deadline}`, value: `${entry.completed ? '✅ COMPLETE' : '🚧 INCOMPLETE'}` },
+                );
+            });
             interaction.editReply({ embeds: [embed] });
-        })
+            return;
+        } else {
+            const embed = embedError(data.error.message);
+            interaction.editReply({ embeds: [embed] });
+        }
     } catch (error) {
         const embed = embedError(`${error}`)
         interaction.editReply({ embeds: [embed] });
@@ -183,7 +166,7 @@ const isProperDateFormat = (dateString: string) => {
     return pattern.test(dateString);
 }
 
-const handleAddTodos = (interaction: ChatInputCommandInteraction) => {
+const handleAddTodos = async (interaction: ChatInputCommandInteraction) => {
     const mentionedUser = interaction.options.get("mention")?.member as GuildMember;
     const discordId = mentionedUser ? mentionedUser.id : interaction.user.id;
     const discordName = mentionedUser ? mentionedUser.displayName : interaction.user.username
@@ -210,25 +193,16 @@ const handleAddTodos = (interaction: ChatInputCommandInteraction) => {
         })
     }
     try {
-        fetch(url, options)
-        .then(res => {
-            return res.json()
-        })
-        .then(data => {
-            if (data.success) {
-                const embed = embedSuccess("Code[Coogs] Todos", `Assigning todo to **${discordName}**: **${title}** with deadline **${deadline}**.`)
-                interaction.editReply({ embeds: [embed] });
-                return
-            }
-            else {
-                const embed = embedError(data.error.message)
-                interaction.editReply({ embeds: [embed] });
-            }
-        })
-        .catch(error => {
-            const embed = embedError(error.toString())
+        const res = await fetch(url, options);
+        const data = await res.json();
+    
+        if (data.success) {
+            const embed = embedSuccess("Code[Coogs] Todos", `Assigning todo to **${discordName}**: **${title}** with deadline **${deadline}**.`);
             interaction.editReply({ embeds: [embed] });
-        })
+        } else {
+            const embed = embedError(data.error.message);
+            interaction.editReply({ embeds: [embed] });
+        }
     } catch (error) {
         const embed = embedError(`${error}`)
         interaction.editReply({ embeds: [embed] });
@@ -239,7 +213,7 @@ const isExecutive = (user: GuildMember) => {
     return user.roles.cache.some(role => role.name === 'Executive');            
 }
 
-const handleUpdateTodoCompletion = (interaction: ChatInputCommandInteraction) => {
+const handleUpdateTodoCompletion = async (interaction: ChatInputCommandInteraction) => {
     const user = interaction.member as GuildMember;
     if (!isExecutive(user)) {
         const embed = embedError("You do not have permission to use this command.")
@@ -259,32 +233,23 @@ const handleUpdateTodoCompletion = (interaction: ChatInputCommandInteraction) =>
         })
     }
     try {
-        fetch(url, options)
-        .then(res => {
-            return res.json()
-        })
-        .then(data => {
-            if (data.success) {
-                const embed = embedSuccess("Code[Coogs] Todos", `Marked todo ID **${id}** as completed.`)
-                interaction.editReply({ embeds: [embed] });
-                return
-            }
-            else {
-                const embed = embedError(data.error.message)
-                interaction.editReply({ embeds: [embed] });
-            }
-        })
-        .catch(error => {
-            const embed = embedError(error.toString())
+        const res = await fetch(url, options);
+        const data = await res.json();
+
+        if (data.success) {
+            const embed = embedSuccess("Code[Coogs] Todos", `Marked todo ID **${id}** as completed.`);
             interaction.editReply({ embeds: [embed] });
-        })
+        } else {
+            const embed = embedError(data.error.message);
+            interaction.editReply({ embeds: [embed] });
+        }
     } catch (error) {
         const embed = embedError(`${error}`)
         interaction.editReply({ embeds: [embed] });
     }
 }
 
-const handleRemoveTodo = (interaction: ChatInputCommandInteraction) => {
+const handleRemoveTodo = async (interaction: ChatInputCommandInteraction) => {
     const user = interaction.member as GuildMember;
     if (!isExecutive(user)) {
         const embed = embedError("You do not have permission to use this command.")
@@ -301,25 +266,16 @@ const handleRemoveTodo = (interaction: ChatInputCommandInteraction) => {
         }
     }
     try {
-        fetch(url, options)
-        .then(res => {
-            return res.json()
-        })
-        .then(data => {
-            if (data.success) {
-                const embed = embedSuccess("Code[Coogs] Todos", `Removed todo ID **${id}**.`)
-                interaction.editReply({ embeds: [embed] });
-                return
-            }
-            else {
-                const embed = embedError(data.error.message)
-                interaction.editReply({ embeds: [embed] });
-            }
-        })
-        .catch(error => {
-            const embed = embedError(error.toString())
+        const res = await fetch(url, options);
+        const data = await res.json();
+
+        if (data.success) {
+            const embed = embedSuccess("Code[Coogs] Todos", `Removed todo ID **${id}**.`);
             interaction.editReply({ embeds: [embed] });
-        })
+        } else {
+            const embed = embedError(data.error.message);
+            interaction.editReply({ embeds: [embed] });
+        }
     } catch (error) {
         const embed = embedError(`${error}`)
         interaction.editReply({ embeds: [embed] });

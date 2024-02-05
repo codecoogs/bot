@@ -18,46 +18,39 @@ const Verify = new CoCommand({
             .setRequired(true)
     ),
     execute: async ({ interaction })=> {
-        try {
-            await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
 
-            const userEmail = interaction.options.get("email")?.value;
-            const userDiscordId = interaction.user.id
-            const url = `${API_BASE_URL}/users/discord/verify?email=${userEmail}&discordId=${userDiscordId}`
-            const options = {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                }
+        const userEmail = interaction.options.get("email")?.value;
+        const userDiscordId = interaction.user.id
+        const url = `${API_BASE_URL}/users/discord/verify?email=${userEmail}&discordId=${userDiscordId}`
+        const options = {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
             }
-            fetch(url, options)
-                .then(res => {
-                    return res.json()
-                })
-                .then(data => {
-                    if (data.success) {
-                        const roleName = "member"
-                        const memberRole = interaction.guild?.roles.cache.find(role => role.name === roleName);
-                        if (!memberRole) {
-                            const embed = embedError(`Role name '${roleName}' does not exist`)
-                            interaction.editReply({ embeds: [embed] });
-                            return
-                        }
-                        (interaction.member?.roles as GuildMemberRoleManager).add(memberRole);
+        }
+        try {
+            const res = await fetch(url, options);
+            const data = await res.json();
 
-                        const embed = embedSuccess("Code[Coogs] Verification", "Successfully verified user!")
-                        interaction.editReply({ embeds: [embed] });
-                        return
-                    }
-                    else {
-                        const embed = embedError(data.error.message)
-                        interaction.editReply({ embeds: [embed] });
-                    }
-                })
-                .catch(error => {
-                    const embed = embedError(error.toString())
+            if (data.success) {
+                const roleName = "member";
+                const memberRole = interaction.guild?.roles.cache.find(role => role.name === roleName);
+                
+                if (!memberRole) {
+                    const embed = embedError(`Role name '${roleName}' does not exist`);
                     interaction.editReply({ embeds: [embed] });
-                })
+                    return;
+                }
+
+                (interaction.member?.roles as GuildMemberRoleManager).add(memberRole);
+
+                const embed = embedSuccess("Code[Coogs] Verification", "Successfully verified user!");
+                interaction.editReply({ embeds: [embed] });
+            } else {
+                const embed = embedError(data.error.message);
+                interaction.editReply({ embeds: [embed] });
+            }
         } catch (error) {
             const embed = embedError(`${error}`)
             interaction.editReply({ embeds: [embed] });
