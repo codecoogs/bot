@@ -46,7 +46,7 @@ const isMember = (user: GuildMember) => {
     return user.roles.cache.some(role => role.name === 'member');             
 }
 
-const handleViewPoints = (interaction: ChatInputCommandInteraction) => {
+const handleViewPoints = async (interaction: ChatInputCommandInteraction) => {
     const mentionedUser = interaction.options.get("mention")?.member as GuildMember;
     if (mentionedUser) {
         if (!isMember(mentionedUser)) {
@@ -73,30 +73,28 @@ const handleViewPoints = (interaction: ChatInputCommandInteraction) => {
             "Content-Type": "application/json"
         }
     }
-    fetch(url, options)
-        .then(res => {
-            return res.json()
-        })
-        .then(data => {
-            if (data.success) {
-                const embed = embedSuccess('Code[Coogs] User Points', 'View a users points!')
-                embed.addFields(
-                    { name: `${data.data.first_name} ${data.data.last_name}`, value: `${data.data.points} points` }
-                );
-
-                interaction.editReply({ embeds: [embed] });
-                return
-            }
-            const embed = embedError(data.error.message)
+    try {
+        const res = await fetch(url, options);
+        const data = await res.json();
+    
+        if (data.success) {
+            const embed = embedSuccess("Code[Coogs] User Points", "View a user's points!");
+            embed.addFields(
+                { name: `${data.data.first_name} ${data.data.last_name}`, value: `${data.data.points} points` }
+            );
+    
             interaction.editReply({ embeds: [embed] });
-        })
-        .catch(error => {
-            const embed = embedError(error.toString())
+        } else {
+            const embed = embedError(data.error.message);
             interaction.editReply({ embeds: [embed] });
-        })
+        }
+    } catch (error) {
+        const embed = embedError(`${error}`);
+        interaction.editReply({ embeds: [embed] });
+    }
 }
 
-const handleLeaderboard = (interaction: ChatInputCommandInteraction) => {
+const handleLeaderboard = async (interaction: ChatInputCommandInteraction) => {
     const amount = 10;
     const url = `${API_BASE_URL}/users/points/leaderboard?top=${amount}`
     const options = {
@@ -105,28 +103,26 @@ const handleLeaderboard = (interaction: ChatInputCommandInteraction) => {
             "Content-Type": "application/json"
         }
     }
-    fetch(url, options)
-        .then(res => {
-            return res.json()
-        })
-        .then(data => {
-            if (data.success) {
-                const embed = embedSuccess('Code[Coogs] Points Leaderboard', 'View the top 10 members with most points!')
-                data.data.forEach((entry: any, index: number) => {
-                    const rank = (index + 1).toString();
-                    embed.addFields(
-                        { name: `#${rank} - ${entry.first_name} ${entry.last_name}`, value: `${entry.points} points` }
-                    );
-                });
-
-                interaction.editReply({ embeds: [embed] });
-                return
-            }
-            const embed = embedError(data.error.message)
+    try {
+        const res = await fetch(url, options);
+        const data = await res.json();
+    
+        if (data.success) {
+            const embed = embedSuccess('Code[Coogs] Points Leaderboard', 'View the top 10 members with most points!');
+            data.data.forEach((entry: any, index: number) => {
+                const rank = (index + 1).toString();
+                embed.addFields(
+                    { name: `#${rank} - ${entry.first_name} ${entry.last_name}`, value: `${entry.points} points` }
+                );
+            });
+    
             interaction.editReply({ embeds: [embed] });
-        })
-        .catch(error => {
-            const embed = embedError(error.toString())
+        } else {
+            const embed = embedError(data.error.message);
             interaction.editReply({ embeds: [embed] });
-        })
+        }
+    } catch (error) {
+        const embed = embedError(`${error}`);
+        interaction.editReply({ embeds: [embed] });
+    }
 }
