@@ -94,7 +94,6 @@ export default Todos;
 const handleGetAllTodosOfUser = async (interaction: ChatInputCommandInteraction) => {
     const mentionedUser = interaction.options.get("mention")?.member as GuildMember;
     const discordId = mentionedUser ? mentionedUser.id : interaction.user.id;
-    const discordName = mentionedUser ? mentionedUser.displayName : interaction.user.username
 
     const url = `${API_BASE_URL}/todos?discord_id=${discordId}`;
     const options = {
@@ -109,14 +108,14 @@ const handleGetAllTodosOfUser = async (interaction: ChatInputCommandInteraction)
     
         if (data.success) {
             if (!data.data) {
-                const embed = embedSuccess("Code[Coogs] Todos", `**${discordName}** has no todos, good job!`);
+                const embed = embedSuccess("Code[Coogs] Todos", `<@${discordId}> has no todos, good job!`);
                 interaction.editReply({ embeds: [embed] });
                 return;
             }
-            const embed = embedSuccess("Code[Coogs] Todos", `Here are all todos for **${discordName}**, sorted by deadline`);
+            const embed = embedSuccess("Code[Coogs] Todos", `Here are all todos for <@${discordId}>, sorted by deadline`);
             data.data.forEach((entry: Todo) => {
                 embed.addFields(
-                    { name: `${entry.id.toString()} - ${entry.title} - Due ${entry.deadline}`, value: `${entry.completed ? '✅ COMPLETE' : '🚧 INCOMPLETE'}` },
+                    { name: `${entry.id.toString()} - ${entry.title}`, value: `Due __${entry.deadline}__ \n${entry.completed ? '✅ COMPLETE' : '🚧 INCOMPLETE'}` },
                 );
             });
             interaction.editReply({ embeds: [embed] });
@@ -175,7 +174,6 @@ const isProperDateFormat = (dateString: string) => {
 const handleAddTodos = async (interaction: ChatInputCommandInteraction) => {
     const mentionedUser = interaction.options.get("mention")?.member as GuildMember;
     const discordId = mentionedUser ? mentionedUser.id : interaction.user.id;
-    const discordName = mentionedUser ? mentionedUser.displayName : interaction.user.username
 
     const title = interaction.options.getString('title') as string;
     const deadline = interaction.options.getString('deadline') as string;
@@ -203,7 +201,7 @@ const handleAddTodos = async (interaction: ChatInputCommandInteraction) => {
         const data = await res.json();
     
         if (data.success) {
-            const embed = embedSuccess("Code[Coogs] Todos", `Assigning todo to **${discordName}**: **${title}** with deadline **${deadline}**.`);
+            const embed = embedSuccess("Code[Coogs] Todos", `Assigning todo to <@${discordId}>: **${title}**, with deadline __${deadline}__.`);
             interaction.editReply({ embeds: [embed] });
         } else {
             const embed = embedError(data.error.message);

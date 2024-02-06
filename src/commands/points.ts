@@ -78,7 +78,7 @@ const handleViewPoints = async (interaction: ChatInputCommandInteraction) => {
         const data = await res.json();
     
         if (data.success) {
-            const embed = embedSuccess("Code[Coogs] User Points", "View a user's points!");
+            const embed = embedSuccess("Code[Coogs] User Points", `View how many points <@${discordId}> has!`);
             embed.addFields(
                 { name: `${data.data.first_name} ${data.data.last_name}`, value: `${data.data.points} points` }
             );
@@ -108,7 +108,7 @@ const handleLeaderboard = async (interaction: ChatInputCommandInteraction) => {
         const data = await res.json();
     
         if (data.success) {
-            const embed = embedSuccess('Code[Coogs] Points Leaderboard', 'View the top 10 members with most points!');
+            const embed = embedSuccess('Code[Coogs] Points Leaderboard', `View the top ${amount} members with most points!`);
             data.data.forEach((entry: any, index: number) => {
                 const rank = (index + 1).toString();
                 embed.addFields(
