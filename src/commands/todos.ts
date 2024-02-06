@@ -7,7 +7,13 @@ type Todo = {
     id: number,
     title: string,
     deadline: string,
-    completed: boolean
+    completed: boolean,
+    todos_users: TodoUser,
+}
+
+type TodoUser = {
+    todos_id: number,
+    discord_id: string,
 }
 
 const Todos = new CoCommand({
@@ -146,7 +152,7 @@ const handleAllTodos = async (interaction: ChatInputCommandInteraction) => {
             const embed = embedSuccess("Code[Coogs] Todos", "Here are all todos, sorted by deadline");
             data.data.forEach((entry: Todo, index: number) => {
                 embed.addFields(
-                    { name: `${entry.id.toString()} - ${entry.title} - Due ${entry.deadline}`, value: `${entry.completed ? '✅ COMPLETE' : '🚧 INCOMPLETE'}` },
+                    { name: `${entry.id.toString()} - ${entry.title}`, value: `Assigned to <@${entry.todos_users.discord_id}> \nDue __${entry.deadline}__ \n${entry.completed ? '✅ COMPLETE' : '🚧 INCOMPLETE'}` },
                 );
             });
             interaction.editReply({ embeds: [embed] });
