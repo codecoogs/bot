@@ -33,11 +33,11 @@ API_BASE_URL=http://localhost:3000/v1
 ```
 Create `.env.production` file and add environment variables
 ```
-API_BASE_URL=api.codecoogs.com/v1
+API_BASE_URL=https://api.codecoogs.com/v1
 ```
 Run this command to start the project
 ```
-pnpm run start
+pnpm start
 ```
 
 
