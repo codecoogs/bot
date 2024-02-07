@@ -21,7 +21,25 @@ $ git clone https://github.com/codecoogs/bot.git
 ```
 
 ## Usage
-TBA
+Create `.env` file and add environment variables
+```
+BOT_TOKEN=
+CLIENT_ID=
+GUILD_ID=
+```
+Create `.env.development` file and add environment variables
+```
+API_BASE_URL=http://localhost:3000/v1
+```
+Create `.env.production` file and add environment variables
+```
+API_BASE_URL=api.codecoogs.com/v1
+```
+Run this command to start the project
+```
+pnpm run start
+```
+
 
 ## Contributing
 Please make sure to read the [Contributing Guide](https://github.com/codecoogs/.github/blob/main/CONTRIBUTING.md)
