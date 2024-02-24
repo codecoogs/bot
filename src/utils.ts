@@ -6,7 +6,7 @@ export const getFolderPath = (folderName: string) => {
 };
 
 export const getFilesFromFolder = (folderPath: string) => {
-    return fs.readdirSync(folderPath).filter((file: string) => file.endsWith(".ts"));
+    return fs.readdirSync(folderPath).filter((file: string) => file.endsWith(".ts") || file.endsWith('.js'));
 };
 
 export const getDefaultObject = (folderPath: string, file: string) => {
