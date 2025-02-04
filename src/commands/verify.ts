@@ -1,61 +1,48 @@
-import { 
-    SlashCommandBuilder,
-    SlashCommandStringOption,
-    GuildMemberRoleManager,
-} from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
+
 import { CoCommand } from "../structures";
-import { embedSuccess, embedError } from "../constants/embeds";
-import { API_BASE_URL } from "../constants/api";
+import { supabaseClient } from "../constants/supabase";
 
 const Verify = new CoCommand({
-    data: new SlashCommandBuilder()
-        .setName("verify")
-        .setDescription("Verify membership with your email!")
-        .addStringOption((option: SlashCommandStringOption) => 
-        option
-            .setName("email")
-            .setDescription("Your email address")
-            .setRequired(true)
-    ),
-    execute: async ({ interaction })=> {
-        await interaction.deferReply({ ephemeral: true });
+  data: new SlashCommandBuilder()
+    .setName("verify")
+    .setDescription("Verifies your CodeCoogs membership."),
+  execute: async ({ interaction }) => {
+    const verifyEmbed = new EmbedBuilder()
+      .setColor(0x0099ff)
+      .setTitle("Verfiying membership")
+      .setURL("https://www.codecoogs.com/")
+      .setAuthor({
+        name: "CoCo Bot",
+        iconURL: "https://www.codecoogs.com/assets/determined-coco.webp",
+        url: "https://www.codecoogs.com/",
+      })
+      .setDescription("Searching through the database. Please wait.");
+    // .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
 
-        const userEmail = interaction.options.get("email")?.value;
-        const userDiscordId = interaction.user.id
-        const url = `${API_BASE_URL}/users/discord/verify?email=${userEmail}&discordId=${userDiscordId}`
-        const options = {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }
-        try {
-            const res = await fetch(url, options);
-            const data = await res.json();
+    const msg = await interaction.reply({ embeds: [verifyEmbed] });
 
-            if (data.success) {
-                const roleName = "member";
-                const memberRole = interaction.guild?.roles.cache.find(role => role.name === roleName);
-                
-                if (!memberRole) {
-                    const embed = embedError(`Role name '${roleName}' does not exist`);
-                    interaction.editReply({ embeds: [embed] });
-                    return;
-                }
+    const { data, error } = await supabaseClient
+      .from("users")
+      .select()
+      .eq("discord", interaction.user.username);
 
-                (interaction.member?.roles as GuildMemberRoleManager).add(memberRole);
-
-                const embed = embedSuccess("Code[Coogs] Verification", "Successfully verified user!");
-                interaction.editReply({ embeds: [embed] });
-            } else {
-                const embed = embedError(data.error.message);
-                interaction.editReply({ embeds: [embed] });
-            }
-        } catch (error) {
-            const embed = embedError(`${error}`)
-            interaction.editReply({ embeds: [embed] });
-        }
+    if (data) {
+      verifyEmbed
+        .setTitle("Verfiying membership completed!")
+        .setDescription(
+          data.length > 0
+            ? "Yipee! You are a member of CodeCoogs :D"
+            : "It appears that you might not be a member :("
+        );
+    } else {
+      verifyEmbed
+        .setTitle("Verfiying membership error")
+        .setDescription("There was an error trying to access the database.");
     }
+
+    msg.edit({ embeds: [verifyEmbed] });
+  },
 });
 
 export default Verify;
