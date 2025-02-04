@@ -18,9 +18,11 @@ const Verify = new CoCommand({
         url: "https://www.codecoogs.com/",
       })
       .setDescription("Searching through the database. Please wait.");
-    // .setThumbnail('https://www.codecoogs.com/assets/computer-coco.60087ab0.webp')
 
     const msg = await interaction.reply({ embeds: [verifyEmbed] });
+
+    const guildMember = interaction.guild?.members.cache.get(interaction.user.id);
+    const role = interaction.guild?.roles.cache.find(role => role.name == "member");
 
     const { data, error } = await supabaseClient
       .from("users")
@@ -29,12 +31,18 @@ const Verify = new CoCommand({
 
     if (data) {
       verifyEmbed
+        .setColor(data.length > 0 ? "Green" : "Red")
         .setTitle("Verfiying membership completed!")
         .setDescription(
           data.length > 0
             ? "Yipee! You are a member of CodeCoogs :D"
             : "It appears that you might not be a member :("
         );
+
+        if (data.length > 0 && guildMember && role) {
+            guildMember.roles.add(role);
+        }
+
     } else {
       verifyEmbed
         .setTitle("Verfiying membership error")
