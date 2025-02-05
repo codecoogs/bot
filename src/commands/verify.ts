@@ -21,8 +21,12 @@ const Verify = new CoCommand({
 
     const msg = await interaction.reply({ embeds: [verifyEmbed] });
 
-    const guildMember = interaction.guild?.members.cache.get(interaction.user.id);
-    const role = interaction.guild?.roles.cache.find(role => role.name == "member");
+    const guildMember = interaction.guild?.members.cache.get(
+      interaction.user.id
+    );
+    const role = interaction.guild?.roles.cache.find(
+      (role) => role.name == "member"
+    );
 
     const { data, error } = await supabaseClient
       .from("users")
@@ -39,12 +43,12 @@ const Verify = new CoCommand({
             : "It appears that you might not be a member :("
         );
 
-        if (data.length > 0 && guildMember && role) {
-            guildMember.roles.add(role);
-        }
-
+      if (data.length > 0 && guildMember && role) {
+        guildMember.roles.add(role);
+      }
     } else {
       verifyEmbed
+        .setColor("Red")
         .setTitle("Verfiying membership error")
         .setDescription("There was an error trying to access the database.");
     }
