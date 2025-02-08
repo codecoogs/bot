@@ -35,6 +35,7 @@ export class CoCo extends Client {
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildPresences,
         GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
       ],
     });

@@ -2,6 +2,7 @@ import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 
 import { CoCommand } from "../structures";
 import { supabaseClient } from "../constants/supabase";
+import { giveRole } from "../utils";
 
 const Verify = new CoCommand({
   data: new SlashCommandBuilder()
@@ -24,9 +25,6 @@ const Verify = new CoCommand({
     const guildMember = interaction.guild?.members.cache.get(
       interaction.user.id
     );
-    const role = interaction.guild?.roles.cache.find(
-      (role) => role.name == "member"
-    );
 
     const { data, error } = await supabaseClient
       .from("users")
@@ -43,8 +41,8 @@ const Verify = new CoCommand({
             : "It appears that you might not be a member :("
         );
 
-      if (data.length > 0 && guildMember && role) {
-        guildMember.roles.add(role);
+      if (data.length > 0 && guildMember) {
+        giveRole(guildMember, "Member");
       }
     } else {
       verifyEmbed
