@@ -8,6 +8,7 @@ import {
   StringSelectMenuOptionBuilder,
   ComponentType,
   MessageFlags,
+  PermissionFlagsBits,
 } from "discord.js";
 
 import { CoCommand } from "../structures";
@@ -27,7 +28,8 @@ const roleKeys = [
 const Roles = new CoCommand({
   data: new SlashCommandBuilder()
     .setName("roles")
-    .setDescription("Select your roles using the menu."),
+    .setDescription("Select your roles using the menu.")
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
   execute: async ({ interaction }) => {
     const roleChannel = interaction.guild?.channels.cache.get(
       roleChannelId
