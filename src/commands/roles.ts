@@ -65,7 +65,7 @@ const Roles = new CoCommand({
           rolesMenu
         );
 
-      roleChannel.send({
+      await roleChannel.send({
         embeds: [rolesEmbed],
         components: [actionRow],
       });
