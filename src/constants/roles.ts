@@ -3,80 +3,80 @@ export default {
     {
       name: "Freshman",
       id: "901296323821719572",
-      emote: "",
+      emote: "🥇",
     },
     {
       name: "Sophomore",
       id: "901296324438269972",
-      emote: "",
+      emote: "🥈",
     },
     {
       name: "Junior",
       id: "901296324736086048",
-      emote: "",
+      emote: "🥉",
     },
     {
       name: "Senior",
       id: "901296325524619274",
-      emote: "",
+      emote: "😎",
     },
     {
       name: "Graduate",
       id: "901296326011125800",
-      emote: "",
+      emote: "🏅",
     },
   ],
 
   Games: [
     {
-      name: "LoL",
+      name: "League of Legends",
       id: "901298803519410237",
-      emote: "",
+      emote: "🔵",
     },
     {
       name: "Valorant",
       id: "901298804345700383",
-      emote: "",
+      emote: "🔫",
     },
     {
-      name: "ROBLOX",
+      name: "Roblox",
       id: "901298804769296425",
-      emote: "",
-    },
-    {
-      name: "Overwatch",
-      id: "901298805973090385",
-      emote: "",
-    },
-    {
-      name: "Among Us",
-      id: "901298806618996746",
-      emote: "",
-    },
-    {
-      name: "Pokemon",
-      id: "901298807168434206",
-      emote: "",
-    },
-    {
-      name: "Genshin Impact",
-      id: "901298807373983756",
-      emote: "",
-    },
-    {
-      name: "Tetris",
-      id: "901298808296730654",
-      emote: "",
-    },
-    {
-      name: "Board Games",
-      id: "901298808917483520",
-      emote: "",
+      emote: "🟥",
     },
     {
       name: "Minecraft",
       id: "901299711384887326",
-      emote: "",
+      emote: "⛏️",
+    },
+    {
+      name: "Overwatch",
+      id: "901298805973090385",
+      emote: "🕛",
+    },
+    {
+      name: "Among Us",
+      id: "901298806618996746",
+      emote: "👽",
+    },
+    {
+      name: "Pokemon",
+      id: "901298807168434206",
+      emote: "🐭",
+    },
+    {
+      name: "Genshin Impact",
+      id: "901298807373983756",
+      emote: "💨",
+    },
+    {
+      name: "Tetris",
+      id: "901298809297630654",
+      emote: "🗼",
+    },
+    {
+      name: "Board Games",
+      id: "901298809174835520",
+      emote: "😪",
     },
   ],
 
@@ -84,62 +84,62 @@ export default {
     {
       name: "C++",
       id: "901320669885788220",
-      emote: "",
+      emote: "➕",
     },
     {
       name: "Java",
       id: "901320670431047680",
-      emote: "",
+      emote: "☕",
     },
     {
       name: "JavaScript",
       id: "901321519223939093",
-      emote: "",
+      emote: "📜",
     },
     {
       name: "TypeScript",
       id: "901320984320163850",
-      emote: "",
+      emote: "🎹",
     },
     {
       name: "HTML/CSS",
       id: "901321520259932230",
-      emote: "",
+      emote: "📖",
     },
     {
       name: "Python",
       id: "901320670783365153",
-      emote: "",
+      emote: "🐍",
     },
     {
       name: "C#",
       id: "901320671487987733",
-      emote: "",
+      emote: "#️⃣",
     },
     {
       name: "R",
       id: "901320672108744734",
-      emote: "",
+      emote: "🇷",
     },
     {
       name: "Swift",
       id: "901320672662409336",
-      emote: "",
-    },
-    {
-      name: "Scala",
-      id: "901320673098604564",
-      emote: "",
-    },
-    {
-      name: "Assembly",
-      id: "901320674092662885",
-      emote: "",
+      emote: "⏩",
     },
     {
       name: "PHP",
       id: "901321521539203132",
-      emote: "",
+      emote: "😂",
+    },
+    {
+      name: "Scala",
+      id: "901320673908604564",
+      emote: "⚖️",
+    },
+    {
+      name: "Assembly",
+      id: "901320674092662885",
+      emote: "🏭",
     },
   ],
 
