@@ -228,19 +228,19 @@ export default {
     {
       name: "Teams Announcement",
       id: "1338055071660773406",
-      emote: "",
+      emote: "👥",
     },
 
     {
       name: "Competitions Announcement",
       id: "1338055131731591271",
-      emote: "",
+      emote: "🖥️",
     },
 
     {
       name: "Workshops Announcement",
       id: "1338055191680782436",
-      emote: "",
+      emote: "🛠️",
     },
 
     // {
@@ -252,7 +252,7 @@ export default {
     {
       name: "Pookies",
       id: "1074903160562393161",
-      emote: "",
+      emote: "😘",
     },
   ]
 };
