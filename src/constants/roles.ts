@@ -223,4 +223,36 @@ export default {
       emote: "😂",
     },
   ],
+
+  "Announcement Pings": [
+    {
+      name: "Teams Announcement",
+      id: "1338055071660773406",
+      emote: "",
+    },
+
+    {
+      name: "Competitions Announcement",
+      id: "1338055131731591271",
+      emote: "",
+    },
+
+    {
+      name: "Workshops Announcement",
+      id: "1338055191680782436",
+      emote: "",
+    },
+
+    // {
+    //   name: "Collaborations Announcement",
+    //   id: "",
+    //   emote: "",
+    // },
+
+    {
+      name: "Pookies",
+      id: "1074903160562393161",
+      emote: "",
+    },
+  ]
 };

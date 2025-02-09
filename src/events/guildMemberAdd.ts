@@ -11,7 +11,10 @@ const guildMemberAdd = new CoCoEvent({
   name: "guildMemberAdd",
   once: false,
   execute: async (member: GuildMember) => {
-    const role = member.guild.roles.cache.get("1337950088512802846");
+    const role = member.guild.roles.cache.find(
+      (role) => role.id === "1337950088512802846"
+    );
+
     if (!role) return;
     
     member.roles.add(role);
@@ -19,7 +22,7 @@ const guildMemberAdd = new CoCoEvent({
     const channel = member.guild.channels.cache.get(
       welcomeChannel
     ) as TextChannel;
-
+    
     channel.send(
       `Hello ${member.user}! Welcome to the Code[Coogs] server. Don't forget to read the <#${rulesChannel}> and introduce yourself at <#${introductionChannel}>.`
     );
