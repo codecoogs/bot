@@ -24,6 +24,7 @@ const Rules = new CoCommand({
 
     const rulesButton = new ButtonBuilder()
       .setLabel("Gain access")
+      .setEmoji("🥥")
       .setCustomId("acceptRules")
       .setStyle(ButtonStyle.Primary);
 
