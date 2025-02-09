@@ -3,9 +3,9 @@ import { supabaseClient } from "../constants/supabase";
 import { CoCoEvent } from "../structures";
 import { GuildMember, TextChannel } from "discord.js";
 
-const welcomeChannel = "1336134974369431574";
+const welcomeChannel = "897562746126761996";
 const rulesChannel = "897566470387671092";
-const introductionChannel = "491622468197416965";
+const introductionChannel = "897595954679644161";
 
 const guildMemberAdd = new CoCoEvent({
   name: "guildMemberAdd",

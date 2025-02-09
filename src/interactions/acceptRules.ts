@@ -1,16 +1,9 @@
-import { ButtonInteraction, MessageFlags } from "discord.js";
+import {  MessageReaction, User } from "discord.js";
 
-export default async (interaction: ButtonInteraction) => {
-  const guildMember = interaction.guild?.members.cache.get(interaction.user.id);
+export default async (reaction: MessageReaction, user: User) => {
+  const guildMember = reaction.message.guild?.members.cache.get(user.id);
 
   if (!guildMember) return;
 
   guildMember.roles.remove("1337950088512802846");
-
-  interaction
-    .reply({
-      content: "You have been verified!",
-      flags: MessageFlags.Ephemeral,
-    })
-    .then((interaction) => setTimeout(() => interaction.delete(), 5000));
 };

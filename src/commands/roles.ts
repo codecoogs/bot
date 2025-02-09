@@ -20,6 +20,7 @@ const roleKeys = [
   "Programming Languages",
   "IDEs and Text Editors",
   "Operating Systems",
+  "Announcement Pings",
 ];
 
 const Roles = new CoCommand({
@@ -41,6 +42,10 @@ const Roles = new CoCommand({
         .setTitle(role)
         .setDescription("Select your roles.");
 
+      if (role === "Announcement Pings") {
+        rolesEmbed.setColor(0xcc0000);
+      }
+
       const rolesMenu = new StringSelectMenuBuilder()
         .setCustomId(customId)
         .setPlaceholder(`Select a ${role} role...`)
@@ -49,7 +54,8 @@ const Roles = new CoCommand({
         .addOptions(
           rolesData.map((roleData) =>
             new StringSelectMenuOptionBuilder()
-              .setLabel(roleData.name + " " + roleData.emote)
+              .setLabel(roleData.name)
+              .setEmoji(roleData.emote)
               .setValue(roleData.id)
           )
         );
@@ -63,7 +69,7 @@ const Roles = new CoCommand({
           rolesMenu
         );
 
-      await roleChannel.send({
+      roleChannel.send({
         embeds: [rolesEmbed],
         components: [actionRow],
       });

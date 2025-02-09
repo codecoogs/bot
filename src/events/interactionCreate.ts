@@ -12,8 +12,6 @@ const checkSpecialInteractions = (interaction: any) => {
     if (customId.startsWith("RoleSelection")) {
       const role = customId.replace("RoleSelection", "");
       rolesAssign(role, interaction);
-    } else if (customId == "acceptRules") {
-      acceptRules(interaction);
     }
   }
 };

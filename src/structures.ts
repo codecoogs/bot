@@ -3,6 +3,7 @@ import {
   Client,
   Collection,
   GatewayIntentBits,
+  Partials,
   Routes,
 } from "discord.js";
 import { REST } from "@discordjs/rest";
@@ -37,7 +38,9 @@ export class CoCo extends Client {
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMessageReactions,
       ],
+      partials: [Partials.Message, Partials.Channel, Partials.Reaction],
     });
   }
 

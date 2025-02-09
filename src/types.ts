@@ -16,7 +16,7 @@ export type CoCommandOptions = {
 };
 
 
-type EventExecute = (options: any) => Promise<void> | void;
+type EventExecute = (...options: any) => Promise<void> | void;
 
 export type CoCoEventOptions = {
     name: string;
