@@ -42,9 +42,9 @@ const Roles = new CoCommand({
         .setTitle(role)
         .setDescription("Select your roles.");
 
-      if (role === "Announcement Pings") {
-        rolesEmbed.setColor(0xcc0000);
-      }
+      // if (role === "Announcement Pings") {
+      //   rolesEmbed.setColor(0xcc0000);
+      // }
 
       const rolesMenu = new StringSelectMenuBuilder()
         .setCustomId(customId)

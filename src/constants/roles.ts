@@ -31,7 +31,7 @@ export default {
     {
       name: "League of Legends",
       id: "901298803519410237",
-      emote: "🔵",
+      emote: "🇱",
     },
     {
       name: "Valorant",
@@ -242,12 +242,6 @@ export default {
       id: "1338055191680782436",
       emote: "🛠️",
     },
-
-    // {
-    //   name: "Collaborations Announcement",
-    //   id: "",
-    //   emote: "",
-    // },
 
     {
       name: "Pookies",
