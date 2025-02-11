@@ -74,6 +74,11 @@ export default {
       emote: "🗼",
     },
     {
+      name: "Smash Bros",
+      id: "927412295376715796",
+      emote: "⚔️",
+    },
+    {
       name: "Board Games",
       id: "901298809174835520",
       emote: "😪",
