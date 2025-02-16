@@ -49,7 +49,8 @@ const Verify = new CoCommand({
     const { data, error } = await supabaseClient
       .from("users")
       .select()
-      .eq("discord", guildMember.user.username);
+      .eq("discord", guildMember.user.username)
+      .eq("paid", true);
 
     if (data) {
       verifyEmbed
