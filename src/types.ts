@@ -1,6 +1,7 @@
 import type {
     ChatInputCommandInteraction,
     SlashCommandBuilder,
+    SlashCommandOptionsOnlyBuilder,
     SlashCommandSubcommandsOnlyBuilder
 } from "discord.js";
 
@@ -11,7 +12,7 @@ interface CommandExecuteOptions {
 type CommandExecute = (options: CommandExecuteOptions) => Promise<void>;
 
 export type CoCommandOptions = {
-    data: Partial<SlashCommandBuilder> | SlashCommandSubcommandsOnlyBuilder;
+    data: Partial<SlashCommandBuilder> | SlashCommandSubcommandsOnlyBuilder | SlashCommandOptionsOnlyBuilder;
     execute: CommandExecute;
 };
 

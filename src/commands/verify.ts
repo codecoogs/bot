@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder, SlashCommandUserOption } from "discord.js";
 
 import { CoCommand } from "../structures";
 import { supabaseClient } from "../constants/supabase";
@@ -7,7 +7,12 @@ import { giveRole } from "../utils";
 const Verify = new CoCommand({
   data: new SlashCommandBuilder()
     .setName("verify")
-    .setDescription("Verifies your CodeCoogs membership."),
+    .setDescription("Verifies your CodeCoogs membership.")
+    .addUserOption((option: SlashCommandUserOption) => {
+      option.setName("user")
+      option.setDescription("User to verify")
+      return option;
+    }),
   execute: async ({ interaction }) => {
     const verifyEmbed = new EmbedBuilder()
       .setColor(0x0099ff)
