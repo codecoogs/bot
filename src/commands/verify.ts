@@ -13,9 +13,7 @@ const Verify = new CoCommand({
     .setName("verify")
     .setDescription("Verifies your CodeCoogs membership.")
     .addUserOption((option) =>
-      option
-        .setName("user")
-        .setDescription("The user to be verified")
+      option.setName("user").setDescription("The user to be verified")
     ),
 
   execute: async ({ interaction }) => {
@@ -32,14 +30,26 @@ const Verify = new CoCommand({
 
     const msg = await interaction.reply({ embeds: [verifyEmbed] });
 
+    const user = interaction.options.getUser("user");
+
     const guildMember = interaction.guild?.members.cache.get(
-      interaction.user.id
+      user?.id || interaction.user.id
     );
+
+    if (!guildMember) {
+      verifyEmbed
+        .setColor("Red")
+        .setTitle("Verfiying membership error")
+        .setDescription("There was an error trying to access the database.");
+
+      msg.edit({ embeds: [verifyEmbed] });
+      return;
+    }
 
     const { data, error } = await supabaseClient
       .from("users")
       .select()
-      .eq("discord", interaction.user.username);
+      .eq("discord", guildMember.user.username);
 
     if (data) {
       verifyEmbed
