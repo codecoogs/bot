@@ -6,6 +6,7 @@ import { GuildMember, TextChannel } from "discord.js";
 const welcomeChannel = "897562746126761996";
 const rulesChannel = "897566470387671092";
 const introductionChannel = "897595954679644161";
+const rolesChannel = "897608615404400700";
 
 const guildMemberAdd = new CoCoEvent({
   name: "guildMemberAdd",
@@ -24,7 +25,7 @@ const guildMemberAdd = new CoCoEvent({
     ) as TextChannel;
     
     channel.send(
-      `Hello ${member.user}! Welcome to the Code[Coogs] server. Don't forget to read the <#${rulesChannel}> and introduce yourself at <#${introductionChannel}>.`
+      `Hello ${member.user}! Welcome to the Code[Coogs] server. Don't forget to read the <#${rulesChannel}>, introduce yourself at <#${introductionChannel}>, and assign your own roles at <#${rolesChannel}>.`
     );
 
     // const { data, error } = await supabaseClient

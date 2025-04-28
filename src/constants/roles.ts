@@ -231,6 +231,18 @@ export default {
 
   "Announcement Pings": [
     {
+      name: "Events Announcement",
+      id: "1366447835444150455",
+      emote: "🎉",
+    },
+
+    {
+      name: "Social Announcement",
+      id: "1363231505085759719",
+      emote: "📢",
+    },
+
+    {
       name: "Teams Announcement",
       id: "1338055071660773406",
       emote: "👥",
