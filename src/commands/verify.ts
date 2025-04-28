@@ -1,61 +1,79 @@
-import { 
-    SlashCommandBuilder,
-    SlashCommandStringOption,
-    GuildMemberRoleManager,
+import {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  SlashCommandUserOption,
 } from "discord.js";
+
 import { CoCommand } from "../structures";
-import { embedSuccess, embedError } from "../constants/embeds";
-import { API_BASE_URL } from "../constants/api";
+import { supabaseClient } from "../constants/supabase";
+import { giveRole } from "../utils";
 
 const Verify = new CoCommand({
-    data: new SlashCommandBuilder()
-        .setName("verify")
-        .setDescription("Verify membership with your email!")
-        .addStringOption((option: SlashCommandStringOption) => 
-        option
-            .setName("email")
-            .setDescription("Your email address")
-            .setRequired(true)
+  data: new SlashCommandBuilder()
+    .setName("verify")
+    .setDescription("Verifies your CodeCoogs membership.")
+    .addUserOption((option) =>
+      option.setName("user").setDescription("The user to be verified")
     ),
-    execute: async ({ interaction })=> {
-        await interaction.deferReply({ ephemeral: true });
 
-        const userEmail = interaction.options.get("email")?.value;
-        const userDiscordId = interaction.user.id
-        const url = `${API_BASE_URL}/users/discord/verify?email=${userEmail}&discordId=${userDiscordId}`
-        const options = {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }
-        try {
-            const res = await fetch(url, options);
-            const data = await res.json();
+  execute: async ({ interaction }) => {
+    const verifyEmbed = new EmbedBuilder()
+      .setColor(0x0099ff)
+      .setTitle("Verfiying membership")
+      .setURL("https://www.codecoogs.com/")
+      .setAuthor({
+        name: "CoCo Bot",
+        iconURL: "https://www.codecoogs.com/assets/determined-coco.webp",
+        url: "https://www.codecoogs.com/",
+      })
+      .setDescription("Searching through the database. Please wait.");
 
-            if (data.success) {
-                const roleName = "member";
-                const memberRole = interaction.guild?.roles.cache.find(role => role.name === roleName);
-                
-                if (!memberRole) {
-                    const embed = embedError(`Role name '${roleName}' does not exist`);
-                    interaction.editReply({ embeds: [embed] });
-                    return;
-                }
+    const msg = await interaction.reply({ embeds: [verifyEmbed] });
 
-                (interaction.member?.roles as GuildMemberRoleManager).add(memberRole);
+    const user = interaction.options.getUser("user");
 
-                const embed = embedSuccess("Code[Coogs] Verification", "Successfully verified user!");
-                interaction.editReply({ embeds: [embed] });
-            } else {
-                const embed = embedError(data.error.message);
-                interaction.editReply({ embeds: [embed] });
-            }
-        } catch (error) {
-            const embed = embedError(`${error}`)
-            interaction.editReply({ embeds: [embed] });
-        }
+    const guildMember = interaction.guild?.members.cache.get(
+      user?.id || interaction.user.id
+    );
+
+    if (!guildMember) {
+      verifyEmbed
+        .setColor("Red")
+        .setTitle("Verfiying membership error")
+        .setDescription("There was an error trying to access the database.");
+
+      msg.edit({ embeds: [verifyEmbed] });
+      return;
     }
+
+    const { data, error } = await supabaseClient
+      .from("users")
+      .select()
+      .eq("discord", guildMember.user.username)
+      .eq("paid", true);
+
+    if (data) {
+      verifyEmbed
+        .setColor(data.length > 0 ? "Green" : "Red")
+        .setTitle("Verfiying membership completed!")
+        .setDescription(
+          data.length > 0
+            ? "Yipee! You are a member of CodeCoogs :D"
+            : "It appears that you might not be a member :("
+        );
+
+      if (data.length > 0 && guildMember) {
+        giveRole(guildMember, "Member");
+      }
+    } else {
+      verifyEmbed
+        .setColor("Red")
+        .setTitle("Verfiying membership error")
+        .setDescription("There was an error trying to access the database.");
+    }
+
+    msg.edit({ embeds: [verifyEmbed] });
+  },
 });
 
 export default Verify;
