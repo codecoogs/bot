@@ -62,7 +62,15 @@ const Verify = new CoCommand({
             return;
         }
 
-        giveRole(member, MEMBER_ROLE);
+        // The link is already written at this point, so a failed role grant must
+        // not read as "try again" -- a second /verify would come back as 409.
+        if (!(await giveRole(member, MEMBER_ROLE))) {
+            const embed = embedError(
+                `Your account is linked to **${email}**, but I could not give you the ${MEMBER_ROLE} role. Ask an officer to add it for you — you do not need to run this command again.`
+            );
+            await interaction.editReply({ embeds: [embed] });
+            return;
+        }
 
         const embed = embedSuccess(
             "Code[Coogs] Membership Verified",

@@ -19,10 +19,20 @@ export const getDefaultObject = (folderPath: string, file: string) => {
   return require(filePath).default;
 };
 
-export const giveRole = (member: GuildMember, roleName: string) => {
+export const giveRole = async (member: GuildMember, roleName: string) => {
   const role = member.guild.roles.cache.find((role) => role.name == roleName);
-  if (role) {
-    member.roles.add(role);
+
+  if (!role) {
+    console.error(`Role "${roleName}" does not exist in ${member.guild.name}`);
+    return false;
+  }
+
+  try {
+    await member.roles.add(role);
+    return true;
+  } catch (error) {
+    console.error(`Failed to give ${member.id} the "${roleName}" role`, error);
+    return false;
   }
 };
 
