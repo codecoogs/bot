@@ -43,7 +43,7 @@ const Points = new CoCommand({
 export default Points;
 
 const isMember = (user: GuildMember) => {
-    return user.roles.cache.some(role => role.name === 'member');             
+    return user.roles.cache.some(role => role.name === 'Member');
 }
 
 const handleViewPoints = async (interaction: ChatInputCommandInteraction) => {
