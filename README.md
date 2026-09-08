@@ -26,6 +26,16 @@ Create `.env` file and add environment variables
 BOT_TOKEN=
 CLIENT_ID=
 GUILD_ID=
+
+# Shared secret for writes to GoGo, must match the API's AUTH_SECRET
+AUTH_SECRET=
+
+# Google Calendar sync. Both are required for the sync to run at all; leave
+# them unset to start the bot with the calendar poller disabled.
+GOOGLE_CALENDAR_ID=
+GOOGLE_API_KEY=
+# Optional, defaults to 15
+CALENDAR_SYNC_INTERVAL_MINUTES=
 ```
 Create `.env.development` file and add environment variables
 ```

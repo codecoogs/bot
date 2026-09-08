@@ -2,6 +2,7 @@ const { ActivityType } = require("discord.js");
 
 import { CoCoEvent } from "../structures";
 import { bot } from "..";
+import { startCalendarSync } from "../services/calendarSync";
 
 const Ready = new CoCoEvent({
     name: "ready",
@@ -9,6 +10,8 @@ const Ready = new CoCoEvent({
     execute() {
         bot.user?.setActivity("with cooders", { type: ActivityType.Playing });
         console.log("CoCo is online.");
+
+        startCalendarSync();
     }
 });
 
